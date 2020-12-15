@@ -8,20 +8,17 @@ library(tidyverse)
 library(assertr)
 library(here)
 
-
-read_csv("clean_data/decathlon_cleaned.csv")
+decathlon_clean_data <- read_csv(here("clean_data/decathlon_cleaned.csv"))
 
 ```
-
-
-
 
 ```{r}
 # Who had the longest long jump seen in the data?
 
 longest_jump <- decathlon_clean_data %>% 
-    select(athletes, competition, long_jump) %>%
-    arrange(desc(long_jump))
+    select(athlete, competition, race_event, event_results) %>%
+    filter(race_event == "long_jump") %>% 
+    arrange(desc(event_results))
     head(longest_jump,1)
 ```
 
@@ -29,11 +26,12 @@ longest_jump <- decathlon_clean_data %>%
 ```{r}
 # What was the average 100m time in each competition?
 
-Average_100m_time <- decathlon_clean_data %>% 
-  select(athletes, competition, track_100m) %>% 
+average_100m_time <- decathlon_clean_data %>% 
+  select(athlete, competition, race_event, event_results) %>% 
+  filter(race_event == "track_100m") %>% 
   group_by(competition) %>% 
-  summarise(mean_time_100 = mean(track_100m))
-  Average_100m_time
+  summarise(mean_time_100 = mean(event_results))
+  average_100m_time
 ```
 
 
@@ -41,27 +39,46 @@ Average_100m_time <- decathlon_clean_data %>%
 #Who had the highest total points across both competitions?
 
 total_scores <- decathlon_clean_data %>% 
-  select(athletes, points) %>% 
-  group_by(athletes) %>% 
+  select(athlete, points) %>% 
+  group_by(athlete) %>% 
 summarise(sum_score_by_athlete = sum(points)) %>% 
 arrange(desc(sum_score_by_athlete))
 head(total_scores,1)
 ```
 
 
+
 ```{r}
 #What was the shot-put scores for the top three competitors in each competition?
+shot_put <- decathlon_clean_data %>% 
+  select(athlete, competition, race_event, event_results) %>%
+  filter(race_event == "shot_put") %>% 
+  arrange(desc(competition, event_results)) %>% 
+  group_by(competition) %>% 
+  slice_max(event_results, n = 3)
+
 ```
+
 
 
 ```{r}
 #What was the average points for competitors who ran the 400m in less than 50 seconds
 #vs. those than ran 400m in more than 50 seconds?
+
+Avg_400m_less_than_50<- decathlon_clean_data %>% 
+  filter(race_event == "track_400m" & event_results < 50) %>% 
+  summarise(avg_less_than_50 = mean(event_results, na.rm = TRUE))
+  Avg_400m_less_than_50
 ```
+  
+  
 
 
 ```{r}
-Average_100m_time
+Avg_400m_more_than_50<- decathlon_clean_data %>% 
+  filter(race_event == "track_400m" & event_results > 50) %>% 
+  summarise(avg_more_than_50 = mean(event_results, na.rm = TRUE))
+  Avg_400m_more_than_50
 
 
 ```

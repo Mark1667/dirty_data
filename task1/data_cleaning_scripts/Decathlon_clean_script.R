@@ -23,19 +23,18 @@ names(decathlon_clean_data)
 decathlon_clean_data
 
 decathlon_clean_data <- decathlon_clean_data %>% 
-  rename(athlete = rowname, Track_100m = x100m, track_400m = x400m, track_100m_hurdle = x110m_hurdle,track_1500m = x1500m) %>% 
+  rename(athlete = rowname, track_100m = x100m, track_400m = x400m, track_100m_hurdle = x110m_hurdle,track_1500m = x1500m) %>% 
   mutate(athlete = str_to_lower(athlete))
 
 
 names(decathlon_clean_data)
 
 decathlon_clean_data <- decathlon_clean_data %>% 
-  pivot_longer(cols = Track_100m : track_1500m,
+  pivot_longer(cols = track_100m : track_1500m,
               names_to = "race_event",
-              values_to = "race_times")
+              values_to = "event_results")
               
   write_csv(decathlon_clean_data, "clean_data/decathlon_cleaned.csv")           
 
-# view the data 
-#head(decathlon_clean_data, 30     )
+
 
